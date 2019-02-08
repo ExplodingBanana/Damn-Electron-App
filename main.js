@@ -1,42 +1,24 @@
 const electron = require('electron');
-
 const app = electron.app;
-
 const BrowserWindow = electron.BrowserWindow;
 
-let mainWindow;
+// Определение глобальной ссылки , если мы не определим, окно
+// окно будет закрыто автоматически когда JavaScript объект будет очищен сборщиком мусора.
+var mainWindow = null;
 
+app.on('window-all-closed', function() {
+  // В OS X обычное поведение приложений и их menu bar
+  //  оставаться активными до тех пор пока пользователь закроет их явно комбинацией клавиш Cmd + Q
+  if (process.platform != 'darwin') {
+    app.quit();
+  }
+});
 
-function createWindow () {
-  mainWindow = new BrowserWindow({
-    width: 1366,
-    height: 750,
-    //fullscreen:true,
-    frame:false,
-    resizable:true
-    }); //основная конфигуация
-
-
-  mainWindow.loadURL('file://' + __dirname + '/views_html/startscreen/index.html'); //загрузка html файла
-
-
+app.on('ready', function() {
+  mainWindow = new BrowserWindow({width: 800, height: 600});
+  mainWindow.loadURL('file://' + __dirname + '/index.html');
+  mainWindow.webContents.openDevTools();
   mainWindow.on('closed', function() {
     mainWindow = null;
   });
-} //закрытие главного окна
-
-app.on('ready', createWindow); //создание окна при готовности приложения
-
-app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});  //закрытие окна и сворачивание в док если это OS X
-
-app.on('activate', function () {
-.
-  if (mainWindow === null) {
-    createWindow();
-
-  }
-}); //восстановление окна
+});
